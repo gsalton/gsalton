@@ -5,13 +5,13 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRK4BLCG5G"></script>
 
   <!-- Meta: description, theme color -->
-  <meta name="description" content="Grant Salton is a quantum research scientist, specialising in quantum algorithms, quantum error‑correction, and quantum solutions/applications.">
+  <meta name="description" content="Grant Salton is a quantum information scientist studying quantum algorithms, quantum error correction, and applications of quantum computers.">
   <meta name="theme-color" content="#005f73">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Grant Salton | Quantum Research Scientist">
   <meta property="og:description"
-        content="Quantum error correction, quantum algorithms, and quantum solutions/applications.">
+        content="Quantum algorithms, quantum error correction, and applications of quantum computers.">
   <meta property="og:url" content="https://gsalton.com">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://gsalton.com/logo.png">
@@ -20,7 +20,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Grant Salton | Quantum Research Scientist">
   <meta name="twitter:description"
-        content="Quantum error correction, quantum algorithms, and quantum solutions/applications.">
+        content="Quantum algorithms, quantum error correction, and applications of quantum computers.">
   <meta name="twitter:image" content="https://gsalton.com/logo.png">
 
   <!-- JSON‑LD Person schema -->
@@ -52,7 +52,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Kodchasan&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     :root {
       scroll-behavior: smooth;
@@ -154,7 +153,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: url('logo.png') center/cover no-repeat;
+      background: url('hero.webp') center/cover no-repeat;
       opacity: 0.1;
       z-index: 0;
     }
@@ -169,13 +168,21 @@
       gap: 1.5rem;
     }
     .card, .experience-item {
+      position: relative;
       perspective: 1000px;
-      height: var(--card-height);
+    }
+    .flip-toggle {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
       cursor: pointer;
     }
     .card-inner {
-      position: relative;
-      width: 100%;
+      display: grid;
+      min-height: var(--card-height);
       height: 100%;
       text-align: center;
       transition: transform var(--transition), box-shadow var(--transition);
@@ -184,24 +191,18 @@
     }
     /* Hover effects only on devices that support hover */
     @media (hover: hover) {
-      .card:hover .card-inner,
-      .experience-item:hover .card-inner,
-      .card.flipped:hover .card-inner,
-      .experience-item.flipped:hover .card-inner {
+      .flipped:hover .card-inner {
         transform: rotateY(180deg) rotateY(15deg) rotateX(5deg) scale(1.05);
         box-shadow: 0 8px 30px rgba(0,0,0,0.1);
       }
     }
-    .card.flipped .card-inner,
-    .experience-item.flipped .card-inner {
+    .flipped .card-inner,
+    .flip-toggle + .card-inner .back {
       transform: rotateY(180deg);
     }
+    /* Both faces size the same grid cell; without a toggle they stack as text. */
+    .flip-toggle + .card-inner .card-face { grid-area: 1 / 1; }
     .card-face {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
       backface-visibility: hidden;
       background: var(--color-surface);
       border-radius: var(--radius);
@@ -211,7 +212,6 @@
       flex-direction: column;
       justify-content: center;
     }
-    .card-face.back { transform: rotateY(180deg); }
     .card-face h4 {
       font-family: 'Kodchasan';
       font-size: 1.15em;
@@ -219,23 +219,34 @@
       color: var(--color-primary);
       font-weight: 600;
     }
-    .card-face p { font-size: 0.9em; color: var(--color-text); overflow: hidden; }
+    .card-face p { font-size: 0.9em; color: var(--color-text); }
     .raptor {
-      position: absolute;
-      top:100px;
-      left:40%;
-      background: url(raptor.png) no-repeat;
+      position: fixed;
+      top: 0;
+      left: clamp(0px, 100% - 360px, 40%);
+      width: min(360px, 100%);
+      aspect-ratio: 360 / 400;
+      border: 0;
+      cursor: pointer;
       z-index: 101;
+    }
+    .raptor:not([hidden]) { background: transparent url('raptor.png') center/contain no-repeat; }
+    @media (prefers-reduced-motion: no-preference) {
+      .raptor:not([hidden]) { animation: raptor-rise 2s ease-in-out; }
+      @keyframes raptor-rise { from { transform: translateY(100px); } }
     }
     footer { text-align: center; padding: 2rem 1rem; font-size: 0.875rem; color: #647c90; }
     @media (max-width: 600px) {
       .hero h1 { font-size: 2.5rem; }
       .hero p { font-size: 1rem; }
-      .card, .experience-item { height: 180px; }
+      :root { --card-height: 180px; }
       nav ul { justify-content: center; gap: 1rem; align-items: center; }
     }
+    @media (prefers-reduced-motion: reduce) {
+      .card-inner { transition: none; }
+    }
   </style>
-  <script src="konami.js"></script>
+  <script defer src="konami.js"></script>
 </head>
 <body>
   <header id="site-header">
@@ -259,23 +270,23 @@
     </section>
     <section class="Section about">
       <h2 class="Section-title">About</h2>
-      <p>I am a senior research scientist at Amazon Web Services with a focus on quantum computing, optimization, and machine learning. I develop and analyze quantum algorithms, quantum solutions, and quantum error correcting codes that bridge theory and real-world hardware, striving to turn quantum advantage into practical solutions for real-world problems. Our open access book, <a href="https://doi.org/10.1017/9781009639651" target="_blank">"Quantum Algorithms: A Survey of Applications and End-to-end Complexities"</a> was published by Cambridge University Press in April 2025.</p>
+      <p><strong>I lead fault-tolerant quantum algorithms and applications at IonQ</strong>, with a focus on quantum simulation, optimization and resource estimation, and AI-assisted research. I develop and analyze quantum algorithms, quantum solutions, and quantum error correcting codes that bridge theory and real-world hardware, striving to turn quantum advantage into practical solutions for real-world problems. Our open access book, <a href="https://doi.org/10.1017/9781009639651" target="_blank">"Quantum Algorithms: A Survey of Applications and End-to-end Complexities"</a> was published by Cambridge University Press in April 2025.</p>
     </section>
     <section class="Section">
-      <h2 class="Section-title">Experience</h2>
+      <h2 class="Section-title">Previous Experience</h2>
       <div class="experience-list">
-        <div class="experience-item" tabindex="0">
+        <div class="experience-item">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Amazon Quantum</h4>
               <p>Senior Research Scientist</p>
             </div>
             <div class="card-face back">
-              <p>Founding member of the Amazon Quantum Solutions Lab, a customer-facing research team. Focus on quantum applications and algorithm development for industry challenges.</p>
+              <p>Founding member of the Amazon Quantum Solutions Lab, a customer-facing research team. Focused on quantum applications and algorithm development for industry challenges.</p>
             </div>
           </div>
         </div>
-        <div class="experience-item" tabindex="0">
+        <div class="experience-item">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Caltech IQIM</h4>
@@ -287,7 +298,7 @@
             </div>
           </div>
         </div>
-        <div class="experience-item" tabindex="0">
+        <div class="experience-item">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Stanford University</h4>
@@ -304,7 +315,7 @@
     <section class="Section">
       <h2 class="Section-title">Research Interests</h2>
       <div class="cards-container">
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Quantum Error Correction</h4>
@@ -315,7 +326,7 @@
             </div>
           </div>
         </div>
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Quantum Algorithms</h4>
@@ -326,18 +337,18 @@
             </div>
           </div>
         </div>
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Quantum Compilation & Resource Estimation</h4>
               <p>Turning high‑level quantum programs into efficient low‑level instructions, and forecasting what they will cost.</p>
             </div>
             <div class="card-face back">
-              <p>Compilation toolkits for Rydberg atom arrays, block‑encoding of classical data, and end-to-end resource analyses of qubit counts, T-count, and T-depth for practical workloads.</p>
+              <p>Compilation toolkits (e.g., Rydberg and ion trap devices), block‑encoding of classical data, and end-to-end resource analyses of qubit counts, T-count, and T-depth for practical workloads.</p>
             </div>
           </div>
         </div>
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>NISQ Methods and Applied Quantum Computing</h4>
@@ -348,7 +359,7 @@
             </div>
           </div>
         </div>
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Quantum Gravity, Holography & Spacetime</h4>
@@ -359,7 +370,7 @@
             </div>
           </div>
         </div>
-        <div class="card" tabindex="0">
+        <div class="card">
           <div class="card-inner">
             <div class="card-face front">
               <h4>Continuous Variable Quantum Information, and Field Theory</h4>
@@ -372,7 +383,7 @@
         </div>
       </div>
     </section>
-    <div class="raptor"></div>
+    <button type="button" class="raptor" aria-label="Dismiss raptor" hidden></button>
   </main>
   <footer>
     &copy; 2025 Grant Salton
@@ -392,10 +403,28 @@
       }
     }, { passive: true });
 
-    // Enable flip on click/tap and keyboard
-    document.querySelectorAll('.card, .experience-item').forEach(el => {
-      el.addEventListener('click', () => el.classList.toggle('flipped'));
-      el.addEventListener('keypress', e => { if (e.key === 'Enter') el.classList.toggle('flipped'); });
+    document.querySelectorAll('.card, .experience-item').forEach(card => {
+      const front = card.querySelector('.front');
+      const back = card.querySelector('.back');
+      const toggle = document.createElement('button');
+      toggle.className = 'flip-toggle';
+      toggle.setAttribute('aria-label', front.querySelector('h4').textContent + ' details');
+      card.prepend(toggle);
+
+      function flip(open) {
+        card.classList.toggle('flipped', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        front.inert = open;
+        back.inert = !open;
+      }
+      flip(false);
+      let pinned = false;
+      toggle.onclick = () => {
+        pinned = !card.classList.contains('flipped');
+        flip(pinned);
+      };
+      toggle.onpointerenter = e => { if (e.pointerType === 'mouse') flip(true); };
+      toggle.onpointerleave = e => { if (e.pointerType === 'mouse') flip(pinned); };
     });
   </script>
 </body>
